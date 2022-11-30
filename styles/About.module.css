@@ -1,0 +1,16 @@
+.inp{
+    border-radius: 6px;
+    height: 35px;
+    width: 180px;
+    text-align: center;
+    margin-top: 20%;
+}
+.btn{
+    background-color: rgb(28, 100, 28);
+    color:white;
+    width: 180px;
+    height: auto;
+    border-radius: 6px;
+    font-size:20px;
+    margin-top: 2px;
+}
