@@ -29,8 +29,8 @@ function Navbar() {
             </div>
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex flex-shrink-0 items-center">
-                <img className="block h-8 w-auto lg:hidden" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company"></img>
-                <img className="hidden h-16 w-auto lg:block" src="http://shpsharidwar.com/images/logo.png" alt="Your Company"></img>
+                <img className="block h-8 w-auto lg:hidden" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"></img>
+                <img className="hidden h-auto w-auto lg:block" src=""></img>
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
@@ -38,16 +38,6 @@ function Navbar() {
                   <Link href="/"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900" aria-current="page">Home</a></Link>
 
                   <Link href="/about"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">About Us</a></Link>
-
-                  <Link href="/facilities"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Facilities</a></Link>
-
-                  <Link href="/admissions"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Admissions</a></Link>
-
-                  <Link href="/academics"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Academics</a></Link>
-
-                  <Link href="/activities"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Activities</a></Link>
-
-                  <Link href="/gallery"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Gallery</a></Link>
 
                   <Link href="/contact"><a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:no-underline active:bg-gray-900">Contact Us</a></Link>
 
