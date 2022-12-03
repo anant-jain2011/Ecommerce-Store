@@ -4,12 +4,9 @@ import Head from "next/head";
 import Image from "next/image"
 import styles from '../styles/Home.module.css'
 
-function Navbar() {
+function Navbar({cart, addToCart, removeFromCart, clearCart, subTotal}) {
   return (
     <>
-      <Head>
-        <script src="https://cdn.tailwindcss.com"></script>
-      </Head>
       <nav className="bg-gray-800">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-20 items-center justify-center">
