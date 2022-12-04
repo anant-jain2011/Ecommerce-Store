@@ -2,8 +2,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
+import mongoose from 'mongoose'
+import Product from '../models/Product'
 
-export default function Home({cart}) {
+export default function Home({ products }) {
   return (
     <div className="">
       <Head>
@@ -12,21 +14,24 @@ export default function Home({cart}) {
         <a rel="icon" href="/favicon.ico" />
       </Head>
       <main className="">
-        <section class="text-gray-600 body-font">
-          <div class="container px-5 py-24 mx-auto">
+        <section className="text-gray-600 body-font">
+          <div className="container px-5 py-24 mx-auto">
 
-            <div class="flex flex-wrap -m-4">
+            <div className="flex flex-wrap -m-4">
 
-              {Object.keys(cart).map((k)=>{<div key ={k} class="lg:w-1/4 md:w-1/2 p-4 w-full">
-                <a class="block relative h-48 rounded overflow-hidden">
-                  <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="https://dummyimage.com/420x260"></img>
-                </a>
-                <div class="mt-4">
-                  <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">CATEGORY</h3>
-                  <h2 class="text-gray-900 title-font text-lg font-medium">{cart[k].name}</h2>
-                  <p class="mt-1">$16.00</p>
-                </div>
-              </div>})}
+              {products.map((item) => {
+                return <Link href={`/products/${item.slug}`}><div key={item._id} className="lg:w-1/4 md:w-1/2 p-4 w-full">
+                  <a className="block relative h-48 rounded overflow-hidden">
+                    <img alt="ecommerce" className="object-cover object-center w-full h-full block" src={item.img}></img>
+                  </a>
+                  <div className="mt-4">
+                    <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">{item.title}</h3>
+                    <h2 className="text-gray-900 title-font text-lg font-medium">{item.category}</h2>
+                    <p className="mt-1">₹{item.price}</p>
+                  </div>
+                  </div>
+                </Link>
+              })}
 
             </div>
 
@@ -45,4 +50,15 @@ export default function Home({cart}) {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps(context) {
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URI)
+  }
+  let products = await Product.find()
+
+  return {
+    props: { products: JSON.parse(JSON.stringify(products)) }, // will be passed to the page component as props
+  }
 }
