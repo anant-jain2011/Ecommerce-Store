@@ -19,15 +19,15 @@ export default function Home({ products }) {
 
             <div className="flex flex-wrap -m-4">
 
-              {products.map((item) => {
-                return <Link href={`/products/${item.slug}`}><div key={item._id} className="lg:w-1/4 md:w-1/2 p-4 w-full">
+              {Object.keys(products).map((item) => {
+                return <Link href={`/products/${products[item].slug}`}><div key={item._id} className="lg:w-1/4 md:w-1/2 p-4 w-full h-32">
                   <a className="block relative h-48 rounded overflow-hidden">
-                    <img alt="ecommerce" className="object-cover object-center w-full h-full block" src={item.img}></img>
+                    <img alt="ecommerce" className="object-cover object-center w-full h-full block" src={products[item].img}></img>
                   </a>
                   <div className="mt-4">
-                    <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">{item.title}</h3>
-                    <h2 className="text-gray-900 title-font text-lg font-medium">{item.category}</h2>
-                    <p className="mt-1">₹{item.price}</p>
+                    <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">{products[item].title}</h3>
+                    <h2 className="text-gray-900 title-font text-lg font-medium">{products[item].category}</h2>
+                    <p className="mt-1">₹{products[item].price}</p>
                   </div>
                   </div>
                 </Link>
@@ -39,14 +39,8 @@ export default function Home({ products }) {
         </section>
       </main>
 
-      <footer className="">
-        <a href="/about" rel="noopener noreferrer">
-          Powered by{' '}
-          <span className="">
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-        <iframe src={"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3457.665446781924!2d78.14812771516841!3d29.931532230852543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3909465a2fbd565d%3A0x29460ebf9700e9e5!2sSwami%20Hariharanand%20Public%20School!5e0!3m2!1sen!2sin!4v1664115415940!5m2!1sen!2sin"} width={"600"} height={"450"} loading={"lazy"} referrerpolicy={"no-referrer-when-downgrade"}></iframe>
+      <footer className="fixed-bottom">
+        {/* <iframe src={"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3457.665446781924!2d78.14812771516841!3d29.931532230852543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3909465a2fbd565d%3A0x29460ebf9700e9e5!2sSwami%20Hariharanand%20Public%20School!5e0!3m2!1sen!2sin!4v1664115415940!5m2!1sen!2sin"} width={"600"} height={"450"} loading={"lazy"} referrerpolicy={"no-referrer-when-downgrade"}></iframe> */}
       </footer>
     </div>
   )

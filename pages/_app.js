@@ -47,7 +47,6 @@ function MyApp({ Component, pageProps }) {
       newCart[itemCode] = { qty: 1, price, name, size:Size, variant }
     }
     
-    console.log(newCart)
     setCart(newCart);
     saveCart(newCart);
   }
