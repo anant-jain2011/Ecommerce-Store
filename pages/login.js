@@ -1,8 +1,17 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
-
+import User from '../models/User';
+var jwt = require('jsonwebtoken');
 
 export default function Login() {
+
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPass] = useState("")
+    
+    // var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+    // console.log(token)
+    
     return (
         <>
             <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -84,3 +93,13 @@ export default function Login() {
         </>
     )
 }
+
+// export async function getServerSideProps(context) {
+//     if (!mongoose.connections[0].readyState) {
+//         await mongoose.connect(process.env.MONGO_URI)
+//     }
+
+//     return {
+//         props: { user: JSON.parse(JSON.stringify(user)) } // will be passed to the page component as props
+//     }
+// }

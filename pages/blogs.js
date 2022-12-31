@@ -70,7 +70,7 @@ export default function Blog(props) {
 }
 
 export async function getServerSideProps(context) {
-  let fetcher = await fetch("http://localhost:3000/api/hello");
+  let fetcher = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/hello`);
   let data = await fetcher.json()
   return {
     props: {data}, // will be passed to the page component as props

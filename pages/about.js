@@ -21,12 +21,9 @@ export default function About() {
         </div>
       </main>
       <footer className="">
-        <a href="/about" rel="noopener noreferrer">
-          Powered by{' '}
-          <span className="">
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
+        <h1 className="">
+          Footer
+        </h1>
       </footer>
     </div>
   )

@@ -4,70 +4,79 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
 function MyApp({ Component, pageProps }) {
+
   const [cart, setCart] = useState({})
   const [subTotal, setSubTotal] = useState(0)
-  const [Size, setSize] = useState("SM")
 
-  // useEffect(() => {
+  if (typeof window !== "undefined") {
+    const localStorage = localStorage;
+  }
 
-  //   try {
-  //     if (localStorage.getItem("cart")) {
-  //       setCart(JSON.parse(localStorage.getItem("cart")))
-  //     }
-  //   } catch (err) {
-  //     console.log("Ek error dikhau ye dekh .")
-  //   }
-  // }, [])
+  useEffect(() => {
+
+    try {
+      if (localStorage.getItem("cart")) {
+        setCart(JSON.parse(localStorage.getItem("cart")))
+      }
+    } catch (err) {
+      console.log("Ek error dikhau ye dekh .")
+    }
+  }, [])
 
   const saveCart = (myCart) => {
-    // localStorage.setItem("cart", myCart);
+    localStorage.setItem("cart", JSON.stringify(myCart));
+
     let subt = 0;
 
-    for (const key in Object.keys(cart)) {
-      subt += (Object.keys(myCart)[key].qty * Object.keys(myCart)[key].price)
+    if (myCart !== {}) {
+      for (const key in cart) {
+        subt += (myCart[key].qty * myCart[key].price)
+      }
+      setSubTotal(subt)
     }
-    setSubTotal(subt)
+
+    else {
+      setSubTotal(0)
+    }
   }
-  
-  
+
+
   const clearCart = () => {
     setCart({})
-    saveCart({})
+    saveCart(cart)
   }
-  
-  
-  const addToCart = (itemCode, qty, price, name, size, variant) => {
+
+
+  const addToCart = (itemCode, qty, price, name, size, variant, img) => {
     let newCart = cart;
-    
+
     if (itemCode in cart) {
       newCart[itemCode].qty += qty;
     }
-    
+
     else {
-      newCart[itemCode] = { qty: 1, price, name, size:Size, variant }
+      newCart[itemCode] = { qty: 1, price, name, size: size, variant, img }
     }
-    
+
     setCart(newCart);
     saveCart(newCart);
   }
 
-  const removeFromCart = (itemCode, qty, price, name, variant) => {
-    let newCart = cart;
-    if (itemCode in cart) {
-      newCart[itemCode].qty -= qty;
-    }
-    if (newCart[itemCode].qty <= 0) {
-      delete newCart[itemCode];
-    }
-    setCart(newCart);
-    saveCart(newCart);
-  }
+  // const removeFromCart = (itemCode, qty) => {
+  //   let newCart = cart;
+  //   if (itemCode in cart) {
+  //     newCart[itemCode].qty -= qty;
+  //   }
+  //   if (newCart[itemCode].qty <= 0) {
+  //     delete newCart[itemCode];
+  //   }
+  //   setCart(newCart);
+  //   saveCart(newCart);
+  // }
 
   return <>
-    <Navbar cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} clearCart={clearCart} subTotal={subTotal} Size={Size} setSize={setSize} />
-
-    <Component cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} clearCart={clearCart} subTotal={subTotal} Size={Size} setSize={setSize} {...pageProps} />
-
+    <Navbar addToCart={addToCart} saveCart={saveCart} clearCart={clearCart} cart={cart} subTotal={subTotal} />
+    <Component addToCart={addToCart} saveCart={saveCart} clearCart={clearCart} cart={cart} subTotal={subTotal} {...pageProps} />
   </>
 }
 

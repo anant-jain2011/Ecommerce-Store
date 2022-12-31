@@ -8,8 +8,10 @@ const handler = async (req, res) => {
         await u.save()
 
         res.status(200).json({ "result": "Success" })
-    } else {
-        res.status(400).json(User.find())
+    }
+
+    else {
+        res.status(400).json({ "error": "This method is not allowed" })
     }
 }
 
