@@ -1,72 +1,25 @@
-import React from 'react'
+import { useEffect } from 'react'
 import Head from 'next/head'
 import Script from 'next/script'
+import mongoose from 'mongoose'
+import Order from '../models/Order'
+import GooglePayButton from '@google-pay/button-react'
 
-const checkout = () => {
-
-  const initiatePayment = async ({ cart, subTotal }) => {
-
-    let txnToken;
-    let oid = Math.floor(Math.random() * Date.now());
-    let data = { cart, subTotal, oid }
-
-    // Get a token 
-
-    let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pretransaction`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "appliction/json",
-      },
-      body: JSON.stringify(data)
-    })
-
-    let b = await a.json()
-    console.log(b)
-
-    var config = {
-      "root": "",
-      "flow": "DEFAULT",
-      "data": {
-        "orderId": oid,
-        "token": txnToken,
-        "tokenType": "TXN_TOKEN",
-        "amount": subTotal
-      },
-      "handler": {
-        "notifyMerchant": function (eventName, data) {
-          console.log("notifyMerchant handler function called");
-          console.log("eventName => ", eventName);
-          console.log("data => ", data);
-        }
-      }
-    };
-
-    window.Paytm.CheckoutJS.init(config).then(function onSuccess() {
-      // after successfully updating configuration, invoke JS Checkout
-      window.Paytm.CheckoutJS.invoke();
-    }).catch(function onError(error) {
-      console.log("error => ", error);
-    });
-
-  }
+const checkout = ({ order, subTotal, cart, saveCart }) => {
 
   return (
     <>
-
       <Head>
         <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" />
-
-        <Script type="application/javascript" src={`${process.env.PAYTM_HOST}/merchantpgpui/checkoutjs/merchants/${process.env.PAYTM_MID}.js`} onload="onScriptLoad();" crossorigin="anonymous"></Script>
-
       </Head>
 
       <main className="pt-20 -mt-2">
         <div className="mx-auto p-2">
-
           <div className="flex flex-wrap flex-row">
             <div className="flex-shrink max-w-full px-4 w-full">
               <p className="text-xl font-bold mt-3 mb-5">Checkout</p>
             </div>
+
             <div className="flex-shrink max-w-full px-4 w-full lg:w-2/3 mb-6">
               <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
                 <div className="w-full overflow-x-auto">
@@ -133,15 +86,62 @@ const checkout = () => {
                               </label>
                             </div>
                             <div className="flex-shrink max-w-full px-4 w-full">
-                              <button type="submit" className="py-2 px-5 inline-block text-center rounded mb-3 leading-5 text-gray-100 bg-pink-500 border border-pink-500 hover:text-gray-100 hover:bg-pink-600 hover:ring-0 hover:border-pink-600 focus:bg-pink-600 focus:border-pink-600 focus:outline-none focus:ring-0">Continue <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block ltr:ml-2 rtl:mr-2 bi bi-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"></path>
-                              </svg></button>
+                              {/* <button type="submit" className="py-2 px-5 inline-block text-center rounded mb-3 leading-5 text-gray-100 bg-pink-500 border border-pink-500 hover:text-gray-100 hover:bg-pink-600 hover:ring-0 hover:border-pink-600 focus:bg-pink-600 focus:border-pink-600 focus:outline-none focus:ring-0">
+                                Continue <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block ltr:ml-2 rtl:mr-2 bi bi-arrow-right" viewBox="0 0 16 16">
+                                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"></path>
+                                </svg></button> */}
+                              <GooglePayButton
+                                environment="TEST"
+                                buttonColor='white'
+                                paymentRequest={{
+                                  apiVersion: 2,
+                                  apiVersionMinor: 0,
+                                  allowedPaymentMethods: [
+                                    {
+                                      type: 'CARD',
+                                      parameters: {
+                                        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                                        allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                                      },
+                                      tokenizationSpecification: {
+                                        type: 'PAYMENT_GATEWAY',
+                                        parameters: {
+                                          gateway: 'example',
+                                          gatewayMerchantId: 'exampleGatewayMerchantId',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                  merchantInfo: {
+                                    merchantId: "BCR2DN4TQTPZZWKJ",
+                                    merchantName: "Anant Variety Store",
+                                  },
+                                  transactionInfo: {
+                                    totalPriceStatus: 'FINAL',
+                                    totalPriceLabel: 'Total',
+                                    totalPrice: '1', //subTotal.toString(),
+                                    currencyCode: 'INR',
+                                    countryCode: 'US',
+                                  },
+                                  callbackIntents: ['PAYMENT_AUTHORIZATION'],
+                                }}
+                                onLoadPaymentData={paymentRequest => {
+                                  console.log('Success', paymentRequest);
+                                }}
+                                onPaymentAuthorized={paymentData => {
+                                  console.log('Payment Authorised Success', paymentData)
+                                  return { transactionState: 'SUCCESS' }
+                                }
+                                }
+                                existingPaymentMethodRequired='false'
+                                buttonType='pay'
+                                buttonSizeMode='fill'
+                              />
                             </div>
                           </form>
                         </div>
                       </div>
                     </div>
-
 
                     <div className="relative flex flex-wrap flex-col shadow mb-4 bg-white dark:bg-gray-800">
                       <div className="py-2 px-4 border-b border-gray-200 mb-0 bg-gray-100 dark:bg-gray-900 dark:bg-opacity-20 dark:border-gray-800" id="HeadingTwoe">
@@ -203,14 +203,18 @@ const checkout = () => {
                             </label>
                           </div>
                           <div className="flex-shrink max-w-full w-full">
-                            <button type="submit" className="py-2 px-5 mb-3 inline-block text-center rounded leading-5 text-gray-100 bg-pink-500 border border-pink-500 hover:text-gray-100 hover:bg-pink-600 hover:ring-0 hover:border-pink-600 focus:bg-pink-600 focus:border-pink-600 focus:outline-none focus:ring-0">Continue <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block ltr:ml-2 rtl:mr-2 bi bi-arrow-right" viewBox="0 0 16 16">
-                              <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"></path>
-                            </svg></button>
+                            <button type="button" className="py-2 px-5 mb-3 inline-block text-center rounded leading-5 text-gray-100 bg-pink-500 border border-pink-500 hover:text-gray-100 hover:bg-pink-600 hover:ring-0 hover:border-pink-600 focus:bg-pink-600 focus:border-pink-600 focus:outline-none focus:ring-0">
+                              {/* <GooglePayButton
+                                environment="TEST"
+                                buttonSizeMode='fill'
+                                paymentRequest={googlePayConfiguration} />  */}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block ltr:ml-2 rtl:mr-2 bi bi-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"></path>
+                              </svg></button>
                           </div>
                         </div>
                       </div>
                     </div>
-
 
                     <div className="relative flex flex-wrap flex-col shadow mb-4 bg-white dark:bg-gray-800">
                       <div className="py-2 px-4 border-b border-gray-200 mb-0 bg-gray-100 dark:bg-gray-900 dark:bg-opacity-20 dark:border-gray-800" id="HeadingThreee">
@@ -257,6 +261,7 @@ const checkout = () => {
                         </div>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>

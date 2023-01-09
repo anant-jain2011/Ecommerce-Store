@@ -17,11 +17,6 @@ const Post = ({ clearCart, addToCart, product }) => {
     const checkService = async () => {
         let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
         let pinJson = await pins.json()
-
-        // console.log(parseInt(pin))
-        // console.log(pinJson)
-
-
         if (pin) {
             if (pin.match(/^[0-9]+$/) != null && Object.keys(pinJson.pincodes).includes(pin)) {
                 setService(true)
@@ -46,8 +41,12 @@ const Post = ({ clearCart, addToCart, product }) => {
         setPin(e.target.value)
     }
 
-    if (product == "null"){
-        router.push("/404.js")
+    // if (product == "null"){
+    //     router.push("/404.js")
+    // }
+
+    const handleSize = (e) => {
+        setSize(e.target.value)
     }
 
     return (
@@ -62,9 +61,9 @@ const Post = ({ clearCart, addToCart, product }) => {
 
                     <section className="text-gray-600 body-font overflow-hidden">
                         <div className="container px-5 py-12 mx-auto">
-                            <div className="lg:w-4/5 mx-auto flex flex-wrap">
+                            <div className="lg:w-full mx-auto flex flex-wrap justify-center">
 
-                                <img alt="ecommerce" className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-top rounded" src={product.img}></img>
+                                <img alt="ecommerce" className="lg:w-1/3 w-full lg:h-96 h-full object-cover object-top rounded md:w-96" src={product.img}></img>
 
                                 <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                                     <h1 className="text-gray-900 text-5xl title-font font-medium mb-10 ">{product.title}</h1>
@@ -116,7 +115,7 @@ const Post = ({ clearCart, addToCart, product }) => {
                                         <div className="flex ml-6 items-center">
                                             <span className="mr-3">Size</span>
                                             <div className="relative">
-                                                <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10" onChange={(e) => { console.log(e.target.value) }}>
+                                                <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10" onChange={handleSize}>
                                                     <option value={"SM"}>SM</option>
                                                     <option value={"M"}>M</option>
                                                     <option value={"L"}>L</option>
@@ -135,7 +134,7 @@ const Post = ({ clearCart, addToCart, product }) => {
                                         <br />
 
                                         <button className="flex ml-8 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded" onClick={() => {
-                                            addToCart(slug, 1, product.price, product.title, product.size, `${product.size} ${product.color}`, product.img);
+                                            addToCart(slug, 1, product.price, product.title, Size, `${Size} ${product.color}`, product.img);
                                             toast.success("Product added to Cart!", {
                                                 position: 'top-left',
                                                 autoClose: 1500
@@ -144,7 +143,7 @@ const Post = ({ clearCart, addToCart, product }) => {
                                         }> Add to Cart </button>
 
                                         <button className="flex ml-5 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded" onClick={clearCart}> Buy Now </button>
-                                        
+
                                         <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4 break-all">
                                             <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
                                                 <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>

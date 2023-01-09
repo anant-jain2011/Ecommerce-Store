@@ -3,38 +3,64 @@ import Link from 'next/link'
 import Head from "next/head";
 import Image from "next/image"
 import styles from '../styles/Home.module.css'
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { UserCircleIcon, ShoppingCartIcon } from '@heroicons/react/24/solid'
 import { useRouter } from "next/router";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [token, setToken] = useState(false);
   const router = useRouter();
 
-  const active = false
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+  }
+
+  const active = false;
 
   const navigation = [
     { "name": "T-Shirts", "href": "/tshirts", "current": active },
     { "name": "About", "href": "/about", "current": active },
     { "name": "Contact", "href": "/contact", "current": active }
-  ]
+  ];
 
   if (typeof window !== "undefined") {
     navigation.map((nav) => {
       nav.current = location.href.includes(nav.href)
     })
   }
+  if (typeof window !== "undefined") {
+    const localStorage = localStorage;
+  }
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setToken(true)
+    }
+    else {
+      setToken(false)
+    }
+  }, [router.query])
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    router.push("/")
+    toast.success("Successfully logged out!",
+      {
+        position: 'top-left',
+        autoClose: 1500
+      })
+  }
 
   return (
     <>
-      <Disclosure as="nav" className="bg-white shadow-lg">
+      {/* <Disclosure as="nav" className={router.pathname == "/tshirts" && !open ? "bg-white shadow-lg fixed top-0 left-0 z-20 w-full" : "bg-white shadow-lg"}> */}
+      <Disclosure as="nav" className={"bg-white shadow-lg"}>
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -50,19 +76,21 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                     )}
                   </Disclosure.Button>
                 </div>
-                <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                  <div className="flex flex-shrink-0 items-center">
+                <div className="flex flex-shrink-0 items-center">
+                  <Link href={"/"}>
                     <img
                       className="block h-8 w-auto lg:hidden"
                       src="https://tailwindui.com/img/logos/mark.svg?color=pink&shade=500"
-                      alt="Your Company"
-                    />
+                      alt="Your Company" />
+                  </Link>
+                  <Link href={"/"}>
                     <img
                       className="hidden h-8 w-auto lg:block"
                       src="https://tailwindui.com/img/logos/mark.svg?color=pink&shade=500"
-                      alt="Your Company"
-                    />
-                  </div>
+                      alt="Your Company" />
+                  </Link>
+                </div>
+                <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-center">
                   <div className="hidden sm:ml-6 sm:block">
                     <div className="flex space-x-4">
                       {navigation.map((item) => {
@@ -77,29 +105,33 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                     </div>
                   </div>
                 </div>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 ml-auto">
+
                   <button
                     type="button"
-                    className="rounded-md shadow-2xl p-1 text-pink-500 hover:text-pink-600" onClick={() => {
+                    className="rounded-md shadow-lg p-1 text-pink-500 hover:text-pink-600" onClick={() => {
                       setOpen(true)
                       saveCart(cart)
                     }}>
 
                     <span className="sr-only">View notifications</span>
-                    <ShoppingCartIcon className="h-8 w-8" aria-hidden="true" />
+                    <ShoppingCartIcon className="h-7 w-7" aria-hidden="true" />
 
                   </button>
-
-                  {/* Profile dropdown */}
+                </div>
+                {token &&
                   <Menu as="div" className="relative ml-3">
+
                     <div>
-                      <Menu.Button className="flex rounded-full ">
+                      <Menu.Button className="flex rounded-full mr-2">
 
                         <span className="sr-only">Open user menu</span>
                         <UserCircleIcon className="h-8 w-8 rounded-full" />
 
                       </Menu.Button>
                     </div>
+
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -107,15 +139,14 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                       enterTo="transform opacity-100 scale-100"
                       leave="transition ease-in duration-75"
                       leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
+                      leaveTo="transform opacity-0 scale-95">
+
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <a
                               href="#"
-                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            >
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                               Your Profile
                             </a>
                           )}
@@ -124,26 +155,34 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                           {({ active }) => (
                             <a
                               href="#"
-                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            >
-                              Settings
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                              Orders
                             </a>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <span
                               className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            >
+                              onClick={logout}>
                               Log out
-                            </a>
+                            </span>
                           )}
                         </Menu.Item>
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                </div>
+                }
+                {!token && 
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 ml-auto">
+                  <button className="text-pink-500 text-md font-medium border-0 py-2 px-6 rounded-md" onClick={()=>router.push("/login")}>
+                    Log In
+                  </button>
+                  <button className="bg-pink-500 text-md text-white border-0 py-2 px-6 rounded-md" onClick={()=>router.push("/signup")}>
+                    Sign Up
+                  </button>
+                </div>}
+                <ToastContainer />
               </div>
             </div>
 
@@ -178,8 +217,7 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
             enterTo="opacity-100"
             leave="ease-in-out duration-500"
             leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+            leaveTo="opacity-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
@@ -193,13 +231,14 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                   enterTo="translate-x-0"
                   leave="transform transition ease-in-out duration-500 sm:duration-400"
                   leaveFrom="translate-x-0"
-                  leaveTo="translate-x-full"
-                >
+                  leaveTo="translate-x-full">
                   <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                       <div className="flex-1 overflow-y-auto py-6 px-4 sm:px-6">
                         <div className="flex items-start justify-between">
-                          <Dialog.Title className="text-xl font-medium text-gray-900 ">Shopping cart</Dialog.Title>
+                          <Dialog.Title className="text-2xl font-bold text-gray-900 font-serif">
+                            Shopping cart
+                          </Dialog.Title>
                           <div className="ml-3 flex h-7 items-center">
                             <button
                               type="button"
@@ -255,6 +294,10 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                                 </li>
                               })}
 
+                              {Object.keys(cart).length == 0 &&
+                                <h1 className="text-xl text-center mt-4 font-medium tracking-wider font-sans">Your cart is empty!</h1>
+                              }
+
                             </ul>
                           </div>
                         </div>
@@ -270,6 +313,7 @@ function Navbar({ cart, addToCart, clearCart, subTotal, saveCart }) {
                           <div className="flex items-center justify-center rounded-md border border-transparent bg-pink-500 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-pink-600" onClick={() => {
                             setOpen(false);
                             router.push("/checkout");
+                            saveCart(cart)
                           }}>
                             Checkout
                           </div>

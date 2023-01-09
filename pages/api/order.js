@@ -1,12 +1,11 @@
 import connectDb from "../../middleware/mongoose"
-import User from "../../models/User"
-var CryptoJS = require("crypto-js");
+import Order from "../../models/Order"
 
 const handler = async (req, res) => {
     if (req.method == "POST") {
-        const {name, email} = req.body
-        let u = new User({name, email, password: CryptoJS.AES.encrypt(req.body.password, process.env.CRYPTO_JS_SECRET).toString()})
-        await u.save()
+
+        let o = new Order(req.body)
+        await o.save()
 
         res.status(200).json({ "result": "Success" })
     }
